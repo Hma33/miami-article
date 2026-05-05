@@ -57,6 +57,12 @@ export function Header() {
               >
                 Gallery
               </Link>
+              <Link
+                to="/articles"
+                className="text-sm uppercase tracking-wide hover:opacity-70 transition-opacity"
+              >
+                Articles
+              </Link>
               <a
                 href="/#visit-us"
                 className="text-sm uppercase tracking-wide hover:opacity-70 transition-opacity"
@@ -141,6 +147,13 @@ export function Header() {
               className="text-lg uppercase tracking-wide py-3 border-b border-gray-100"
             >
               Gallery
+            </Link>
+            <Link
+              to="/articles"
+              onClick={closeMenu}
+              className="text-lg uppercase tracking-wide py-3 border-b border-gray-100"
+            >
+              Articles
             </Link>
             <a
               href="/#visit-us"
