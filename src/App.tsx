@@ -7,6 +7,8 @@ import { DoctorDetailPage } from './pages/DoctorDetailPage';
 import { GalleryPage } from './pages/GalleryPage';
 import { ArticlesPage } from './pages/ArticlesPage';
 import { ArticleDetailPage } from './pages/ArticleDetailPage';
+import { PackagePage } from './pages/PackagePage';
+
 
 
 export default function App() {
@@ -16,6 +18,8 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/services" element={<ServicesPage />} />
+        <Route path="/packages" element={<PackagePage />} />
+
         <Route path="/team" element={<TeamPage />} />
         <Route path="/team/:doctorId" element={<DoctorDetailPage />} />
         <Route path="/gallery" element={<GalleryPage />} />

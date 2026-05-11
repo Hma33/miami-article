@@ -46,6 +46,13 @@ export function Header() {
                 Services
               </Link>
               <Link
+                to="/packages"
+                className="text-sm uppercase tracking-wide hover:opacity-70 transition-opacity"
+              >
+                Packages
+              </Link>
+
+              <Link
                 to="/team"
                 className="text-sm uppercase tracking-wide hover:opacity-70 transition-opacity"
               >
@@ -134,6 +141,14 @@ export function Header() {
             >
               Services
             </Link>
+            <Link
+              to="/packages"
+              onClick={closeMenu}
+              className="text-lg uppercase tracking-wide py-3 border-b border-gray-100"
+            >
+              Packages
+            </Link>
+
             <Link
               to="/team"
               onClick={closeMenu}

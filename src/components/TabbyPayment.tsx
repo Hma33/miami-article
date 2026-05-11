@@ -9,14 +9,16 @@ export function TabbyPayment() {
                         Flexible Payment Options
                     </h2>
                     <p className="text-base text-[var(--color-navy)]/70 mb-8 max-w-[600px] mx-auto">
-                        We accept Tabby - Split your payments into 4 interest-free installments
+                        We accept Tabby - Flexible payment options
                     </p>
+
                     <div className="flex justify-center">
                         <img
                             src={tabbyLogo}
-                            alt="Tabby Payment - Split into 4 interest-free installments"
+                            alt="Tabby Payment"
                             className="h-16 w-auto"
                         />
+
                     </div>
                 </div>
             </div>
