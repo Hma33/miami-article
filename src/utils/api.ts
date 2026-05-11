@@ -1,8 +1,12 @@
 // src/utils/api.ts
 
-// Since this is a Vite project, we use import.meta.env instead of process.env
-// Fallback to localhost if the environment variable isn't set
-const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || 'http://127.0.0.1:1337';
+// Since this is a Vite project, we use import.meta.env instead of process.env.
+// Fallback to the current browser origin when VITE_STRAPI_URL is not configured.
+const STRAPI_URL = (import.meta.env.VITE_STRAPI_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://127.0.0.1:1337')).replace(/\/$/, '');
+
+export function getStrapiUrl() {
+  return STRAPI_URL;
+}
 
 /**
  * Standardized fetch utility for Strapi

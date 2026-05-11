@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { WhatsAppFab } from '../components/WhatsAppFab';
-import { fetchAPI } from '../utils/api';
+import { fetchAPI, getStrapiUrl } from '../utils/api';
 
 interface Article {
   id: number;
@@ -78,7 +78,7 @@ export function ArticlesPage() {
                   {article.Image?.url ? (
                     <div className="w-full h-48 bg-gray-200">
                       <img
-                        src={`${import.meta.env.VITE_STRAPI_URL || 'http://127.0.0.1:1337'}${article.Image.url}`}
+                        src={`${getStrapiUrl()}${article.Image.url}`}
                         alt={article.Image.alternativeText || article.Title}
                         className="w-full h-full object-cover"
                       />

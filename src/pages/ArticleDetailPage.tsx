@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { WhatsAppFab } from '../components/WhatsAppFab';
-import { fetchAPI } from '../utils/api';
+import { fetchAPI, getStrapiUrl } from '../utils/api';
 import { ArrowLeft } from 'lucide-react';
 
 interface Article {
@@ -104,7 +104,7 @@ export function ArticleDetailPage() {
             return (
               <figure key={index} className="my-10">
                 <img 
-                  src={`${import.meta.env.VITE_STRAPI_URL || 'http://127.0.0.1:1337'}${block.image.url}`} 
+                  src={`${getStrapiUrl()}${block.image.url}`} 
                   alt={block.image.alternativeText || ''} 
                   className="rounded-2xl w-full h-auto shadow-lg"
                 />
@@ -157,7 +157,7 @@ export function ArticleDetailPage() {
                 {article.Image?.url && (
                   <div className="w-full aspect-[21/9] md:aspect-[21/9] rounded-[32px] overflow-hidden bg-gray-100 mb-12 shadow-sm">
                     <img 
-                      src={`${import.meta.env.VITE_STRAPI_URL || 'http://127.0.0.1:1337'}${article.Image.url}`} 
+                      src={`${getStrapiUrl()}${article.Image.url}`} 
                       alt={article.Image.alternativeText || article.Title} 
                       className="w-full h-full object-cover"
                     />
