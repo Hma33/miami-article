@@ -17,6 +17,13 @@ interface Article {
     url: string;
     alternativeText: string | null;
   };
+  metaTitle?: string;
+  metaDescription?: string;
+  keywords?: string;
+  shareImage?: {
+    url: string;
+    alternativeText: string | null;
+  };
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;
@@ -169,16 +176,25 @@ export function ArticleDetailPage() {
     });
   };
 
-  const articleDescription = article ? getSEODescription(article.Content) : '';
+  const getSEODescriptionFallback = article ? getSEODescription(article.Content) : '';
+  
+  // Custom SEO Priority Fallback Logic:
+  const seoTitle = article?.metaTitle || article?.Title;
+  const seoDescription = article?.metaDescription || getSEODescriptionFallback;
+  const seoKeywords = article?.keywords;
+  
   const articleImageUrl = article?.Image?.url ? `${getStrapiUrl()}${article.Image.url}` : undefined;
+  const shareImageUrl = article?.shareImage?.url 
+    ? `${getStrapiUrl()}${article.shareImage.url}` 
+    : articleImageUrl;
   
   // JSON-LD Structured Schema Data for rich snippets
   const schemaData = article ? {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
-    'headline': article.Title,
-    'description': articleDescription,
-    'image': articleImageUrl,
+    'headline': seoTitle,
+    'description': seoDescription,
+    'image': shareImageUrl,
     'datePublished': article.publishedAt || article.createdAt,
     'dateModified': article.updatedAt || article.createdAt,
     'publisher': {
@@ -220,9 +236,10 @@ export function ArticleDetailPage() {
           ) : (
             <>
               <SEO 
-                title={article.Title}
-                description={articleDescription}
-                ogImage={articleImageUrl}
+                title={seoTitle}
+                description={seoDescription}
+                keywords={seoKeywords}
+                ogImage={shareImageUrl}
                 ogType="article"
                 schemaData={schemaData}
               />
