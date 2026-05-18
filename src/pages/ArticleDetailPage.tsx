@@ -5,6 +5,8 @@ import { Footer } from '../components/Footer';
 import { WhatsAppFab } from '../components/WhatsAppFab';
 import { fetchAPI, getStrapiUrl } from '../utils/api';
 import { ArrowLeft } from 'lucide-react';
+import { SEO } from '../components/SEO';
+import { TableOfContents } from '../components/TableOfContents';
 
 interface Article {
   id: number;
@@ -15,6 +17,9 @@ interface Article {
     url: string;
     alternativeText: string | null;
   };
+  createdAt?: string;
+  updatedAt?: string;
+  publishedAt?: string;
 }
 
 export function ArticleDetailPage() {
@@ -40,6 +45,39 @@ export function ArticleDetailPage() {
       loadArticle();
     }
   }, [documentId]);
+
+  // Helper to extract dynamic SEO description from paragraphs
+  const getSEODescription = (contentBlocks: any[]) => {
+    if (!contentBlocks || !Array.isArray(contentBlocks)) return '';
+    for (const block of contentBlocks) {
+      if (block.type === 'paragraph' && block.children && block.children.length > 0) {
+        const text = block.children.map((child: any) => child.text).join(' ');
+        if (text.trim().length > 0) {
+          return text.length > 160 ? text.substring(0, 157) + '...' : text;
+        }
+      }
+    }
+    return 'Miami Dubai Clinic - Read our latest insights and articles on premier dental health and beauty.';
+  };
+
+  // Helper to slugify heading text into stable anchor IDs
+  const slugify = (text: string) => {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  };
+
+  // Extract headings from Content for Table of Contents
+  const headings = article?.Content
+    ? article.Content.filter((block: any) => block.type === 'heading')
+        .map((block: any) => {
+          const text = block.children.map((child: any) => child.text).join('');
+          const id = slugify(text);
+          return { id, text, level: block.level || 2 };
+        })
+    : [];
 
   const renderStrapiBlocks = (blocks: any[]) => {
     if (!blocks || !Array.isArray(blocks)) return null;
@@ -67,18 +105,24 @@ export function ArticleDetailPage() {
             </p>
           );
         case 'heading':
+          const headingText = block.children.map((child: any) => child.text).join('');
+          const headingId = slugify(headingText);
           const HeadingTag = `h${block.level}` as keyof JSX.IntrinsicElements;
           const classNames = {
-            1: 'text-4xl mt-12 mb-6',
-            2: 'text-3xl mt-10 mb-5',
-            3: 'text-2xl mt-8 mb-4',
-            4: 'text-xl mt-6 mb-3',
-            5: 'text-lg mt-4 mb-2',
-            6: 'text-base mt-4 mb-2',
+            1: 'text-4xl mt-12 mb-6 scroll-mt-32',
+            2: 'text-3xl mt-10 mb-5 scroll-mt-32',
+            3: 'text-2xl mt-8 mb-4 scroll-mt-32',
+            4: 'text-xl mt-6 mb-3 scroll-mt-32',
+            5: 'text-lg mt-4 mb-2 scroll-mt-32',
+            6: 'text-base mt-4 mb-2 scroll-mt-32',
           };
           return (
-            <HeadingTag key={index} className={`${classNames[block.level as 1|2|3|4|5|6] || 'text-2xl'} font-medium text-[var(--color-navy)]`}>
-              {block.children.map((child: any) => child.text).join('')}
+            <HeadingTag 
+              key={index} 
+              id={headingId}
+              className={`${classNames[block.level as 1|2|3|4|5|6] || 'text-2xl'} font-medium text-[var(--color-navy)]`}
+            >
+              {headingText}
             </HeadingTag>
           );
         case 'list':
@@ -104,9 +148,9 @@ export function ArticleDetailPage() {
             return (
               <figure key={index} className="my-10">
                 <img 
-                  src={`${getStrapiUrl()}${block.image.url}`} 
-                  alt={block.image.alternativeText || ''} 
-                  className="rounded-2xl w-full h-auto shadow-lg"
+                   src={`${getStrapiUrl()}${block.image.url}`} 
+                   alt={block.image.alternativeText || ''} 
+                   className="rounded-2xl w-full h-auto shadow-lg"
                 />
                 {block.image.caption && (
                   <figcaption className="text-center text-sm text-gray-500 mt-3">{block.image.caption}</figcaption>
@@ -125,12 +169,38 @@ export function ArticleDetailPage() {
     });
   };
 
+  const articleDescription = article ? getSEODescription(article.Content) : '';
+  const articleImageUrl = article?.Image?.url ? `${getStrapiUrl()}${article.Image.url}` : undefined;
+  
+  // JSON-LD Structured Schema Data for rich snippets
+  const schemaData = article ? {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    'headline': article.Title,
+    'description': articleDescription,
+    'image': articleImageUrl,
+    'datePublished': article.publishedAt || article.createdAt,
+    'dateModified': article.updatedAt || article.createdAt,
+    'publisher': {
+      '@type': 'MedicalOrganization',
+      'name': 'Miami Dubai Clinic',
+      'logo': {
+        '@type': 'ImageObject',
+        'url': 'https://miamiclinic.ae/logo.png' // standard domain-relative logo
+      }
+    },
+    'mainEntityOfPage': {
+      '@type': 'WebPage',
+      '@id': window.location.href
+    }
+  } : undefined;
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header />
       
       <main className="flex-grow py-24">
-        <div className="max-w-[800px] mx-auto px-6 md:px-8">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-8">
           
           <Link to="/articles" className="inline-flex items-center text-[var(--color-navy)]/60 hover:text-[var(--color-navy)] mb-12 transition-colors group">
             <ArrowLeft size={20} className="mr-2 group-hover:-translate-x-1 transition-transform" />
@@ -148,27 +218,56 @@ export function ArticleDetailPage() {
               <Link to="/articles" className="text-[var(--color-navy)] underline">Return to articles</Link>
             </div>
           ) : (
-            <article className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-              <header className="mb-12">
-                <h1 className="text-4xl md:text-5xl font-medium text-[var(--color-navy)] leading-tight mb-8">
-                  {article.Title}
-                </h1>
-                
-                {article.Image?.url && (
-                  <div className="w-full aspect-[21/9] md:aspect-[21/9] rounded-[32px] overflow-hidden bg-gray-100 mb-12 shadow-sm">
-                    <img 
-                      src={`${getStrapiUrl()}${article.Image.url}`} 
-                      alt={article.Image.alternativeText || article.Title} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-              </header>
+            <>
+              <SEO 
+                title={article.Title}
+                description={articleDescription}
+                ogImage={articleImageUrl}
+                ogType="article"
+                schemaData={schemaData}
+              />
+              
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                {/* Main Content Column */}
+                <div className="lg:col-span-8">
+                  <article className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <header className="mb-12">
+                      <h1 className="text-4xl md:text-5xl font-medium text-[var(--color-navy)] leading-tight mb-8">
+                        {article.Title}
+                      </h1>
+                      
+                      {article.Image?.url && (
+                        <div className="w-full aspect-[21/9] rounded-[32px] overflow-hidden bg-gray-100 mb-12 shadow-sm">
+                          <img 
+                            src={articleImageUrl} 
+                            alt={article.Image.alternativeText || article.Title} 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                    </header>
 
-              <div className="prose prose-lg max-w-none">
-                {renderStrapiBlocks(article.Content)}
+                    {/* Mobile collapsible index - positioned right before the first text block */}
+                    {headings.length > 0 && (
+                      <div className="lg:hidden">
+                        <TableOfContents headings={headings} />
+                      </div>
+                    )}
+
+                    <div className="prose prose-lg max-w-none">
+                      {renderStrapiBlocks(article.Content)}
+                    </div>
+                  </article>
+                </div>
+
+                {/* Desktop Sidebar Column */}
+                {headings.length > 0 && (
+                  <aside className="hidden lg:block lg:col-span-4">
+                    <TableOfContents headings={headings} />
+                  </aside>
+                )}
               </div>
-            </article>
+            </>
           )}
 
         </div>

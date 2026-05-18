@@ -4,6 +4,7 @@ import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { WhatsAppFab } from '../components/WhatsAppFab';
 import { fetchAPI, getStrapiUrl } from '../utils/api';
+import { SEO } from '../components/SEO';
 
 interface Article {
   id: number;
@@ -51,6 +52,11 @@ export function ArticlesPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      <SEO 
+        title="Articles & Health Insights"
+        description="Stay up to date with the latest dental care tips, expert articles, and health insights from the specialists at Miami Dubai Clinic."
+        keywords="dental clinic articles, oral health tips, Miami Dubai Clinic blog, dental advice dubai"
+      />
       <Header />
 
       <main className="flex-grow py-32">
